@@ -28,6 +28,11 @@ const ErrorCodes = {
   // Validation Errors (1300-1399)
   VALIDATION_ERROR: 1300,
 
+  // PC Parts Errors (1400-1499)
+  PC_PART_NOT_FOUND: 1400,
+  PC_PART_ALREADY_EXISTS: 1401,
+  PC_PART_IN_USE: 1402,
+
   // Server Errors (9000-9999)
   INTERNAL_SERVER_ERROR: 9999,
 };
