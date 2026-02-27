@@ -22,9 +22,15 @@ module.exports = (sequelize) => {
   );
 
   PcieConnector.associate = (models) => {
-    PcieConnector.hasMany(models.Psu, {
+    PcieConnector.belongsToMany(models.Psu, {
+      through: models.PsuPcieConnector,
       foreignKey: "pcieConnectorId",
+      otherKey: "psuId",
       as: "psus",
+    });
+    PcieConnector.hasMany(models.Vga, {
+      foreignKey: "pcieConnectorId",
+      as: "vgas",
     });
   };
 

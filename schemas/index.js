@@ -17,6 +17,7 @@ const Permission = require("./permission.schema")(sequelize);
 const RolePermission = require("./role_permission.schema")(sequelize);
 
 // ── PC Parts: Lookup Tables (Manual String ID) ────────────────────────────────
+const CaseSize = require("./case_size.schema")(sequelize);
 const CoolerType = require("./cooler_type.schema")(sequelize);
 const FormFactor = require("./form_factor.schema")(sequelize);
 const InterfaceType = require("./interface_type.schema")(sequelize);
@@ -33,6 +34,7 @@ const Cpu = require("./cpu.schema")(sequelize);
 const Hdd = require("./hdd.schema")(sequelize);
 const Mainboard = require("./mainboard.schema")(sequelize);
 const Psu = require("./psu.schema")(sequelize);
+const PsuPcieConnector = require("./psu_pcie_connector.schema")(sequelize);
 const Ram = require("./ram.schema")(sequelize);
 const Ssd = require("./ssd.schema")(sequelize);
 const Vga = require("./vga.schema")(sequelize);
@@ -45,6 +47,7 @@ const models = {
   User,
 
   // Lookup Tables
+  CaseSize,
   CoolerType,
   FormFactor,
   InterfaceType,
@@ -61,6 +64,7 @@ const models = {
   Hdd,
   Mainboard,
   Psu,
+  PsuPcieConnector,
   Ram,
   Ssd,
   Vga,

@@ -8,10 +8,11 @@ const INCLUDE = [
   { model: FormFactor, as: "formFactor" },
   { model: InterfaceType, as: "interfaceType" },
 ];
+const EXCLUDE = ["ssdTypeId", "formFactorId", "interfaceTypeId"];
 
-const getAll = () => findAll(Ssd, INCLUDE);
+const getAll = () => findAll(Ssd, INCLUDE, EXCLUDE);
 
-const getById = (id) => findById(Ssd, id, INCLUDE);
+const getById = (id) => findById(Ssd, id, INCLUDE, EXCLUDE);
 
 const create = async ({
   name,
@@ -35,7 +36,7 @@ const create = async ({
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
-  return await Ssd.create({
+  const record = await Ssd.create({
     name,
     ssdTypeId,
     formFactorId,
@@ -44,12 +45,13 @@ const create = async ({
     tdp,
     description,
   });
+  return findById(Ssd, record.id, INCLUDE, EXCLUDE);
 };
 
 const update = async (id, data) => {
   const record = await findById(Ssd, id);
   await record.update(data);
-  return findById(Ssd, id, INCLUDE);
+  return findById(Ssd, id, INCLUDE, EXCLUDE);
 };
 
 const remove = (id) => destroy(Ssd, id);

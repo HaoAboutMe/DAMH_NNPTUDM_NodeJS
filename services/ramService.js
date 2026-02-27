@@ -4,10 +4,11 @@ const { AppError } = require("./authService");
 const { ErrorCodes } = require("../utils/errorCodes");
 
 const INCLUDE = [{ model: RamType, as: "ramType" }];
+const EXCLUDE = ["ramTypeId"];
 
-const getAll = () => findAll(Ram, INCLUDE);
+const getAll = () => findAll(Ram, INCLUDE, EXCLUDE);
 
-const getById = (id) => findById(Ram, id, INCLUDE);
+const getById = (id) => findById(Ram, id, INCLUDE, EXCLUDE);
 
 const create = async ({
   name,
@@ -32,7 +33,7 @@ const create = async ({
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
-  return await Ram.create({
+  const record = await Ram.create({
     name,
     ramTypeId,
     ramBus,
@@ -42,12 +43,13 @@ const create = async ({
     tdp,
     description,
   });
+  return findById(Ram, record.id, INCLUDE, EXCLUDE);
 };
 
 const update = async (id, data) => {
   const record = await findById(Ram, id);
   await record.update(data);
-  return findById(Ram, id, INCLUDE);
+  return findById(Ram, id, INCLUDE, EXCLUDE);
 };
 
 const remove = (id) => destroy(Ram, id);

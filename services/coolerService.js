@@ -4,10 +4,11 @@ const { AppError } = require("./authService");
 const { ErrorCodes } = require("../utils/errorCodes");
 
 const INCLUDE = [{ model: CoolerType, as: "coolerType" }];
+const EXCLUDE = ["coolerTypeId"];
 
-const getAll = () => findAll(Cooler, INCLUDE);
+const getAll = () => findAll(Cooler, INCLUDE, EXCLUDE);
 
-const getById = (id) => findById(Cooler, id, INCLUDE);
+const getById = (id) => findById(Cooler, id, INCLUDE, EXCLUDE);
 
 const create = async ({
   name,
@@ -23,7 +24,7 @@ const create = async ({
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
-  return await Cooler.create({
+  const record = await Cooler.create({
     name,
     coolerTypeId,
     radiatorSize,
@@ -31,12 +32,13 @@ const create = async ({
     tdpSupport,
     description,
   });
+  return findById(Cooler, record.id, INCLUDE, EXCLUDE);
 };
 
 const update = async (id, data) => {
   const record = await findById(Cooler, id);
   await record.update(data);
-  return findById(Cooler, id, INCLUDE);
+  return findById(Cooler, id, INCLUDE, EXCLUDE);
 };
 
 const remove = (id) => destroy(Cooler, id);

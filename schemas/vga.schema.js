@@ -29,10 +29,11 @@ module.exports = (sequelize) => {
         allowNull: false,
         references: { model: "pcie_version", key: "id" },
       },
-      powerConnector: {
+      pcieConnectorId: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "Mô tả connector nguồn (vd: 2x8pin, 16pin)",
+        references: { model: "pcie_connector", key: "id" },
+        comment: "Loại connector nguồn PCIe (vd: 12VHPWR, 2X8PIN)",
       },
       score: {
         type: DataTypes.INTEGER,
@@ -55,6 +56,10 @@ module.exports = (sequelize) => {
     Vga.belongsTo(models.PcieVersion, {
       foreignKey: "pcieVersionId",
       as: "pcieVersion",
+    });
+    Vga.belongsTo(models.PcieConnector, {
+      foreignKey: "pcieConnectorId",
+      as: "pcieConnector",
     });
   };
 

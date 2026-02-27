@@ -4,6 +4,7 @@ const {
   Role,
   Permission,
   RolePermission,
+  CaseSize,
   CoolerType,
   FormFactor,
   InterfaceType,
@@ -67,6 +68,17 @@ async function seed() {
   console.log("✅ Seed Auth/User thành công");
 
   // ── 5. PC Parts — Lookup Tables ─────────────────────────────────────────────
+
+  // CaseSize
+  const caseSizes = [
+    { id: "ATX", name: "ATX (Standard)" },
+    { id: "MATX", name: "Micro-ATX (mATX)" },
+    { id: "ITX", name: "Mini-ITX (ITX)" },
+    { id: "EATX", name: "Extended ATX (EATX)" },
+  ];
+  for (const item of caseSizes) {
+    await CaseSize.findOrCreate({ where: { id: item.id }, defaults: item });
+  }
 
   // CoolerType
   const coolerTypes = [

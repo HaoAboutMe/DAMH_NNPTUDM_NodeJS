@@ -119,13 +119,20 @@ const options = {
         // ─── PC Parts Request Schemas ─────────────────────────────────
         PcCaseRequest: {
           type: "object",
-          required: ["name", "size", "maxVgaLengthMm", "maxCoolerHeightMm"],
+          required: [
+            "name",
+            "caseSizeId",
+            "maxVgaLengthMm",
+            "maxCoolerHeightMm",
+          ],
           properties: {
             name: { type: "string", example: "Lian Li PC-O11D" },
-            size: {
+            caseSizeId: {
               type: "string",
-              enum: ["ATX", "mATX", "ITX"],
+              enum: ["ATX", "MATX", "ITX", "EATX"],
               example: "ATX",
+              description:
+                "ID của kích thước case — xem /pc-parts/identity/case-sizes",
             },
             maxVgaLengthMm: {
               type: "integer",
@@ -250,7 +257,7 @@ const options = {
             "ramBusMax",
             "ramSlot",
             "ramMaxCapacity",
-            "size",
+            "caseSizeId",
             "pcieVgaVersionId",
           ],
           properties: {
@@ -278,10 +285,12 @@ const options = {
               example: 128,
               description: "GB",
             },
-            size: {
+            caseSizeId: {
               type: "string",
-              enum: ["ATX", "mATX", "ITX"],
+              enum: ["ATX", "MATX", "ITX", "EATX"],
               example: "ATX",
+              description:
+                "ID của kích thước mainboard — xem /pc-parts/identity/case-sizes",
             },
             pcieVgaVersionId: {
               type: "string",
@@ -304,11 +313,15 @@ const options = {
               example: "80+ Gold",
               description: "80+ Bronze | Gold | Platinum | Titanium",
             },
-            pcieConnectorId: {
-              type: "string",
-              nullable: true,
-              enum: ["2X8PIN", "3X8PIN", "12VHPWR", "16PIN"],
-              example: "12VHPWR",
+            pcieConnectorIds: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["2X8PIN", "3X8PIN", "12VHPWR", "16PIN"],
+              },
+              example: ["12VHPWR"],
+              description:
+                "Danh sách ID PCIe connector — có thể nhiều loại, hoặc rỗng",
             },
             sataConnector: { type: "integer", example: 12, default: 0 },
             description: { type: "string", nullable: true, example: null },
@@ -394,7 +407,7 @@ const options = {
             "lengthMm",
             "tdp",
             "pcieVersionId",
-            "powerConnector",
+            "pcieConnectorId",
           ],
           properties: {
             name: { type: "string", example: "NVIDIA RTX 4090" },
@@ -409,10 +422,12 @@ const options = {
               enum: ["PCIE_3", "PCIE_4", "PCIE_5"],
               example: "PCIE_4",
             },
-            powerConnector: {
+            pcieConnectorId: {
               type: "string",
+              enum: ["2X8PIN", "3X8PIN", "12VHPWR", "16PIN"],
               example: "12VHPWR",
-              description: "Mô tả connector nguồn",
+              description:
+                "Loại connector nguồn PCIe — xem /pc-parts/identity/pcie-connectors",
             },
             score: {
               type: "integer",
@@ -733,7 +748,7 @@ const options = {
           tags: ["PC Parts - Identity"],
           summary: "Lấy danh sách lookup table",
           description:
-            "Lấy toàn bộ bản ghi của một lookup table. **Không cần xác thực.**\n\n**Các resource hợp lệ:**\n- `cooler-types` — Loại tản nhiệt (AIR, AIO)\n- `form-factors` — Form factor ổ cứng (FF_2_5, M2_2280...)\n- `interface-types` — Loại giao tiếp (SATA_3, PCIE_4...)\n- `pcie-connectors` — Connector nguồn PCIe (2X8PIN, 12VHPWR...)\n- `pcie-versions` — Phiên bản PCIe (PCIE_3, PCIE_4, PCIE_5)\n- `ram-types` — Loại RAM (DDR4, DDR5)\n- `sockets` — Socket CPU (AM4, AM5, LGA1700)\n- `ssd-types` — Loại SSD (SATA, NVME)",
+            "Lấy toàn bộ bản ghi của một lookup table. **Không cần xác thực.**\n\n**Các resource hợp lệ:**\n- `case-sizes` — Kích thước case/mainboard (ATX, MATX, ITX, EATX)\n- `cooler-types` — Loại tản nhiệt (AIR, AIO)\n- `form-factors` — Form factor ổ cứng (FF_2_5, M2_2280...)\n- `interface-types` — Loại giao tiếp (SATA_3, PCIE_4...)\n- `pcie-connectors` — Connector nguồn PCIe (2X8PIN, 12VHPWR...)\n- `pcie-versions` — Phiên bản PCIe (PCIE_3, PCIE_4, PCIE_5)\n- `ram-types` — Loại RAM (DDR4, DDR5)\n- `sockets` — Socket CPU (AM4, AM5, LGA1700)\n- `ssd-types` — Loại SSD (SATA, NVME)",
           parameters: [
             {
               name: "resource",
@@ -742,6 +757,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -752,7 +768,7 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "ssd-types",
+              example: "case-sizes",
             },
           ],
           responses: {
@@ -786,6 +802,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -796,7 +813,7 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "ssd-types",
+              example: "case-sizes",
             },
           ],
           requestBody: {
@@ -805,6 +822,10 @@ const options = {
               "application/json": {
                 schema: { $ref: "#/components/schemas/LookupCreateRequest" },
                 examples: {
+                  caseSize: {
+                    summary: "Thêm Case Size",
+                    value: { id: "EATX", name: "Extended ATX (EATX)" },
+                  },
                   ssdType: {
                     summary: "Thêm SSD Type",
                     value: { id: "NVME", name: "NVMe SSD" },
@@ -849,6 +870,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -859,14 +881,14 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "sockets",
+              example: "case-sizes",
             },
             {
               name: "id",
               in: "path",
               required: true,
               schema: { type: "string" },
-              example: "AM5",
+              example: "ATX",
             },
           ],
           responses: {
@@ -876,7 +898,7 @@ const options = {
                 "application/json": {
                   example: {
                     code: 1000,
-                    result: { id: "AM5", name: "AMD AM5 (Ryzen 7000+)" },
+                    result: { id: "ATX", name: "ATX (Standard)" },
                   },
                 },
               },
@@ -897,6 +919,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -907,14 +930,14 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "sockets",
+              example: "case-sizes",
             },
             {
               name: "id",
               in: "path",
               required: true,
               schema: { type: "string" },
-              example: "AM5",
+              example: "ATX",
             },
           ],
           requestBody: {
@@ -922,7 +945,7 @@ const options = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/LookupUpdateRequest" },
-                example: { name: "AMD AM5 (Ryzen 7000 / 9000)" },
+                example: { name: "ATX (Standard Full Tower)" },
               },
             },
           },
@@ -933,7 +956,7 @@ const options = {
                 "application/json": {
                   example: {
                     code: 1000,
-                    result: { id: "AM5", name: "AMD AM5 (Ryzen 7000 / 9000)" },
+                    result: { id: "ATX", name: "ATX (Standard Full Tower)" },
                   },
                 },
               },
@@ -954,6 +977,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -964,14 +988,14 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "ssd-types",
+              example: "case-sizes",
             },
             {
               name: "id",
               in: "path",
               required: true,
               schema: { type: "string" },
-              example: "NVME",
+              example: "MATX",
             },
           ],
           responses: {
@@ -1005,13 +1029,14 @@ const options = {
                       {
                         id: "uuid",
                         name: "Lian Li PC-O11D",
-                        size: "ATX",
+                        caseSizeId: "ATX",
                         maxVgaLengthMm: 420,
                         maxCoolerHeightMm: 167,
                         maxRadiatorSize: 360,
                         drive35Slot: 2,
                         drive25Slot: 4,
                         description: null,
+                        caseSize: { id: "ATX", name: "ATX (Standard)" },
                       },
                     ],
                   },
@@ -1031,7 +1056,7 @@ const options = {
                 schema: { $ref: "#/components/schemas/PcCaseRequest" },
                 example: {
                   name: "Lian Li PC-O11D",
-                  size: "ATX",
+                  caseSizeId: "ATX",
                   maxVgaLengthMm: 420,
                   maxCoolerHeightMm: 167,
                   maxRadiatorSize: 360,
@@ -1486,10 +1511,11 @@ const options = {
                         ramBusMax: 6400,
                         ramSlot: 4,
                         ramMaxCapacity: 128,
-                        size: "ATX",
+                        caseSizeId: "ATX",
                         pcieVgaVersionId: "PCIE_5",
                         m2Slot: 5,
                         sataSlot: 6,
+                        caseSize: { id: "ATX", name: "ATX (Standard)" },
                       },
                     ],
                   },
@@ -1516,7 +1542,7 @@ const options = {
                   ramBusMax: 6400,
                   ramSlot: 4,
                   ramMaxCapacity: 128,
-                  size: "ATX",
+                  caseSizeId: "ATX",
                   pcieVgaVersionId: "PCIE_5",
                   m2Slot: 5,
                   sataSlot: 6,
@@ -1599,9 +1625,14 @@ const options = {
                         name: "Corsair RM1000x",
                         wattage: 1000,
                         efficiency: "80+ Gold",
-                        pcieConnectorId: "12VHPWR",
                         sataConnector: 12,
                         description: null,
+                        pcieConnectors: [
+                          {
+                            id: "12VHPWR",
+                            name: "12VHPWR (16-pin, RTX 4000 series)",
+                          },
+                        ],
                       },
                     ],
                   },
@@ -1626,10 +1657,22 @@ const options = {
                       name: "Corsair RM1000x",
                       wattage: 1000,
                       efficiency: "80+ Gold",
-                      pcieConnectorId: "12VHPWR",
+                      pcieConnectorIds: ["12VHPWR"],
                       sataConnector: 12,
                       description:
                         "PSU 1000W 80+ Gold, connector 12VHPWR cho RTX 4090",
+                    },
+                  },
+                  multiPcie: {
+                    summary: "PSU có nhiều loại PCIe connector",
+                    value: {
+                      name: "Corsair HX1500i",
+                      wattage: 1500,
+                      efficiency: "80+ Platinum",
+                      pcieConnectorIds: ["2X8PIN", "12VHPWR"],
+                      sataConnector: 16,
+                      description:
+                        "PSU 1500W Platinum, hỗ trợ cả 8-pin lẫn 12VHPWR",
                     },
                   },
                   noPcie: {
@@ -1638,7 +1681,7 @@ const options = {
                       name: "Seasonic Focus GX-650",
                       wattage: 650,
                       efficiency: "80+ Gold",
-                      pcieConnectorId: null,
+                      pcieConnectorIds: [],
                       sataConnector: 8,
                       description:
                         "PSU 650W 80+ Gold, phù hợp build không cần GPU rời",
@@ -1952,10 +1995,13 @@ const options = {
                         name: "NVIDIA RTX 4090",
                         lengthMm: 336,
                         tdp: 450,
-                        pcieVersionId: "PCIE_4",
-                        powerConnector: "12VHPWR",
                         score: 30000,
                         description: null,
+                        pcieVersion: { id: "PCIE_4", name: "PCIe 4.0" },
+                        pcieConnector: {
+                          id: "12VHPWR",
+                          name: "12VHPWR (16-pin, RTX 4000 series)",
+                        },
                       },
                     ],
                   },
@@ -1981,7 +2027,7 @@ const options = {
                       lengthMm: 336,
                       tdp: 450,
                       pcieVersionId: "PCIE_4",
-                      powerConnector: "12VHPWR",
+                      pcieConnectorId: "12VHPWR",
                       score: 30000,
                       description:
                         "GPU NVIDIA Ada Lovelace, 24GB GDDR6X, flagship 2023",
@@ -1994,7 +2040,7 @@ const options = {
                       lengthMm: 287,
                       tdp: 355,
                       pcieVersionId: "PCIE_4",
-                      powerConnector: "2X8PIN",
+                      pcieConnectorId: "2X8PIN",
                       score: 25000,
                       description:
                         "GPU AMD RDNA 3, 24GB GDDR6, flagship AMD 2023",
