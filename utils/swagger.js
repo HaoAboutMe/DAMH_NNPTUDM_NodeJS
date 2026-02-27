@@ -313,11 +313,15 @@ const options = {
               example: "80+ Gold",
               description: "80+ Bronze | Gold | Platinum | Titanium",
             },
-            pcieConnectorId: {
-              type: "string",
-              nullable: true,
-              enum: ["2X8PIN", "3X8PIN", "12VHPWR", "16PIN"],
-              example: "12VHPWR",
+            pcieConnectorIds: {
+              type: "array",
+              items: {
+                type: "string",
+                enum: ["2X8PIN", "3X8PIN", "12VHPWR", "16PIN"],
+              },
+              example: ["12VHPWR"],
+              description:
+                "Danh sách ID PCIe connector — có thể nhiều loại, hoặc rỗng",
             },
             sataConnector: { type: "integer", example: 12, default: 0 },
             description: { type: "string", nullable: true, example: null },
@@ -1619,9 +1623,14 @@ const options = {
                         name: "Corsair RM1000x",
                         wattage: 1000,
                         efficiency: "80+ Gold",
-                        pcieConnectorId: "12VHPWR",
                         sataConnector: 12,
                         description: null,
+                        pcieConnectors: [
+                          {
+                            id: "12VHPWR",
+                            name: "12VHPWR (16-pin, RTX 4000 series)",
+                          },
+                        ],
                       },
                     ],
                   },
@@ -1646,10 +1655,22 @@ const options = {
                       name: "Corsair RM1000x",
                       wattage: 1000,
                       efficiency: "80+ Gold",
-                      pcieConnectorId: "12VHPWR",
+                      pcieConnectorIds: ["12VHPWR"],
                       sataConnector: 12,
                       description:
                         "PSU 1000W 80+ Gold, connector 12VHPWR cho RTX 4090",
+                    },
+                  },
+                  multiPcie: {
+                    summary: "PSU có nhiều loại PCIe connector",
+                    value: {
+                      name: "Corsair HX1500i",
+                      wattage: 1500,
+                      efficiency: "80+ Platinum",
+                      pcieConnectorIds: ["2X8PIN", "12VHPWR"],
+                      sataConnector: 16,
+                      description:
+                        "PSU 1500W Platinum, hỗ trợ cả 8-pin lẫn 12VHPWR",
                     },
                   },
                   noPcie: {
@@ -1658,7 +1679,7 @@ const options = {
                       name: "Seasonic Focus GX-650",
                       wattage: 650,
                       efficiency: "80+ Gold",
-                      pcieConnectorId: null,
+                      pcieConnectorIds: [],
                       sataConnector: 8,
                       description:
                         "PSU 650W 80+ Gold, phù hợp build không cần GPU rời",

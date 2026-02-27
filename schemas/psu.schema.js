@@ -24,12 +24,6 @@ module.exports = (sequelize) => {
         allowNull: false,
         comment: "80+ Bronze | Gold | Platinum | Titanium",
       },
-      pcieConnectorId: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        references: { model: "pcie_connector", key: "id" },
-        comment: "nullable — một số PSU không có PCIe connector riêng",
-      },
       sataConnector: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -48,9 +42,11 @@ module.exports = (sequelize) => {
   );
 
   Psu.associate = (models) => {
-    Psu.belongsTo(models.PcieConnector, {
-      foreignKey: "pcieConnectorId",
-      as: "pcieConnector",
+    Psu.belongsToMany(models.PcieConnector, {
+      through: models.PsuPcieConnector,
+      foreignKey: "psuId",
+      otherKey: "pcieConnectorId",
+      as: "pcieConnectors",
     });
   };
 

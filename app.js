@@ -31,6 +31,7 @@ const {
   Hdd,
   Mainboard,
   Psu,
+  PsuPcieConnector,
   Ram,
   Ssd,
   Vga,
@@ -88,6 +89,7 @@ sequelize
     await Hdd.sync();
     await Mainboard.sync();
     await Psu.sync();
+    await PsuPcieConnector.sync();
     await Ram.sync();
     await Ssd.sync();
     await Vga.sync();

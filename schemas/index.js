@@ -34,6 +34,7 @@ const Cpu = require("./cpu.schema")(sequelize);
 const Hdd = require("./hdd.schema")(sequelize);
 const Mainboard = require("./mainboard.schema")(sequelize);
 const Psu = require("./psu.schema")(sequelize);
+const PsuPcieConnector = require("./psu_pcie_connector.schema")(sequelize);
 const Ram = require("./ram.schema")(sequelize);
 const Ssd = require("./ssd.schema")(sequelize);
 const Vga = require("./vga.schema")(sequelize);
@@ -63,6 +64,7 @@ const models = {
   Hdd,
   Mainboard,
   Psu,
+  PsuPcieConnector,
   Ram,
   Ssd,
   Vga,
