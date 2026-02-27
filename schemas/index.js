@@ -17,6 +17,7 @@ const Permission = require("./permission.schema")(sequelize);
 const RolePermission = require("./role_permission.schema")(sequelize);
 
 // ── PC Parts: Lookup Tables (Manual String ID) ────────────────────────────────
+const CaseSize = require("./case_size.schema")(sequelize);
 const CoolerType = require("./cooler_type.schema")(sequelize);
 const FormFactor = require("./form_factor.schema")(sequelize);
 const InterfaceType = require("./interface_type.schema")(sequelize);
@@ -45,6 +46,7 @@ const models = {
   User,
 
   // Lookup Tables
+  CaseSize,
   CoolerType,
   FormFactor,
   InterfaceType,

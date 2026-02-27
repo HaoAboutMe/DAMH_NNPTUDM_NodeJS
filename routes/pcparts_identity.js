@@ -19,6 +19,7 @@ const {
 } = require("../middlewares/auth.middleware");
 const { createLookupController } = require("../controllers/lookupController");
 const {
+  CaseSize,
   CoolerType,
   FormFactor,
   InterfaceType,
@@ -31,6 +32,7 @@ const {
 
 // ── Map resource name → Sequelize Model ────────────────────────────────────
 const RESOURCE_MAP = {
+  "case-sizes": CaseSize,
   "cooler-types": CoolerType,
   "form-factors": FormFactor,
   "interface-types": InterfaceType,

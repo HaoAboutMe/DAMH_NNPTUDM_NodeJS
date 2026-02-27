@@ -14,10 +14,10 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      size: {
+      caseSizeId: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "ATX | mATX | ITX",
+        references: { model: "case_size", key: "id" },
       },
       maxVgaLengthMm: {
         type: DataTypes.INTEGER,
@@ -56,6 +56,13 @@ module.exports = (sequelize) => {
       timestamps: false,
     },
   );
+
+  PcCase.associate = (models) => {
+    PcCase.belongsTo(models.CaseSize, {
+      foreignKey: "caseSizeId",
+      as: "caseSize",
+    });
+  };
 
   return PcCase;
 };

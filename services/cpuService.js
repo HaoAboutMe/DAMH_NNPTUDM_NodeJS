@@ -7,10 +7,11 @@ const INCLUDE = [
   { model: Socket, as: "socket" },
   { model: PcieVersion, as: "pcieVersion" },
 ];
+const EXCLUDE = ["socketId", "pcieVersionId"];
 
-const getAll = () => findAll(Cpu, INCLUDE);
+const getAll = () => findAll(Cpu, INCLUDE, EXCLUDE);
 
-const getById = (id) => findById(Cpu, id, INCLUDE);
+const getById = (id) => findById(Cpu, id, INCLUDE, EXCLUDE);
 
 const create = async ({
   name,
@@ -28,7 +29,7 @@ const create = async ({
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
-  return await Cpu.create({
+  const record = await Cpu.create({
     name,
     socketId,
     vrmMin,
@@ -38,12 +39,13 @@ const create = async ({
     score: score ?? 0,
     description,
   });
+  return findById(Cpu, record.id, INCLUDE, EXCLUDE);
 };
 
 const update = async (id, data) => {
   const record = await findById(Cpu, id);
   await record.update(data);
-  return findById(Cpu, id, INCLUDE);
+  return findById(Cpu, id, INCLUDE, EXCLUDE);
 };
 
 const remove = (id) => destroy(Cpu, id);

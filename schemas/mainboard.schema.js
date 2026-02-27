@@ -49,10 +49,10 @@ module.exports = (sequelize) => {
         allowNull: false,
         comment: "GB — dung lượng RAM tối đa",
       },
-      size: {
+      caseSizeId: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: "ATX | mATX | ITX",
+        references: { model: "case_size", key: "id" },
       },
       pcieVgaVersionId: {
         type: DataTypes.STRING,
@@ -94,6 +94,10 @@ module.exports = (sequelize) => {
     Mainboard.belongsTo(models.PcieVersion, {
       foreignKey: "pcieVgaVersionId",
       as: "pcieVgaVersion",
+    });
+    Mainboard.belongsTo(models.CaseSize, {
+      foreignKey: "caseSizeId",
+      as: "caseSize",
     });
   };
 

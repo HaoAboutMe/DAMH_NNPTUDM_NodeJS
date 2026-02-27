@@ -15,6 +15,7 @@ const {
   User,
   Permission,
   // Lookup Tables (không có FK — sync trước)
+  CaseSize,
   CoolerType,
   FormFactor,
   InterfaceType,
@@ -70,6 +71,7 @@ sequelize
     await User.sync();
 
     // ── Bước 2: PC Parts — Lookup Tables (Manual ID, không có FK) ─────
+    await CaseSize.sync();
     await CoolerType.sync();
     await FormFactor.sync();
     await InterfaceType.sync();

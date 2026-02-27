@@ -4,10 +4,11 @@ const { AppError } = require("./authService");
 const { ErrorCodes } = require("../utils/errorCodes");
 
 const INCLUDE = [{ model: PcieConnector, as: "pcieConnector" }];
+const EXCLUDE = ["pcieConnectorId"];
 
-const getAll = () => findAll(Psu, INCLUDE);
+const getAll = () => findAll(Psu, INCLUDE, EXCLUDE);
 
-const getById = (id) => findById(Psu, id, INCLUDE);
+const getById = (id) => findById(Psu, id, INCLUDE, EXCLUDE);
 
 const create = async ({
   name,
@@ -23,7 +24,7 @@ const create = async ({
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
-  return await Psu.create({
+  const record = await Psu.create({
     name,
     wattage,
     efficiency,
@@ -31,12 +32,13 @@ const create = async ({
     sataConnector: sataConnector ?? 0,
     description,
   });
+  return findById(Psu, record.id, INCLUDE, EXCLUDE);
 };
 
 const update = async (id, data) => {
   const record = await findById(Psu, id);
   await record.update(data);
-  return findById(Psu, id, INCLUDE);
+  return findById(Psu, id, INCLUDE, EXCLUDE);
 };
 
 const remove = (id) => destroy(Psu, id);

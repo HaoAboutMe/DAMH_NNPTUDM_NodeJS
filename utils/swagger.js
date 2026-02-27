@@ -119,13 +119,20 @@ const options = {
         // ─── PC Parts Request Schemas ─────────────────────────────────
         PcCaseRequest: {
           type: "object",
-          required: ["name", "size", "maxVgaLengthMm", "maxCoolerHeightMm"],
+          required: [
+            "name",
+            "caseSizeId",
+            "maxVgaLengthMm",
+            "maxCoolerHeightMm",
+          ],
           properties: {
             name: { type: "string", example: "Lian Li PC-O11D" },
-            size: {
+            caseSizeId: {
               type: "string",
-              enum: ["ATX", "mATX", "ITX"],
+              enum: ["ATX", "MATX", "ITX", "EATX"],
               example: "ATX",
+              description:
+                "ID của kích thước case — xem /pc-parts/identity/case-sizes",
             },
             maxVgaLengthMm: {
               type: "integer",
@@ -250,7 +257,7 @@ const options = {
             "ramBusMax",
             "ramSlot",
             "ramMaxCapacity",
-            "size",
+            "caseSizeId",
             "pcieVgaVersionId",
           ],
           properties: {
@@ -278,10 +285,12 @@ const options = {
               example: 128,
               description: "GB",
             },
-            size: {
+            caseSizeId: {
               type: "string",
-              enum: ["ATX", "mATX", "ITX"],
+              enum: ["ATX", "MATX", "ITX", "EATX"],
               example: "ATX",
+              description:
+                "ID của kích thước mainboard — xem /pc-parts/identity/case-sizes",
             },
             pcieVgaVersionId: {
               type: "string",
@@ -733,7 +742,7 @@ const options = {
           tags: ["PC Parts - Identity"],
           summary: "Lấy danh sách lookup table",
           description:
-            "Lấy toàn bộ bản ghi của một lookup table. **Không cần xác thực.**\n\n**Các resource hợp lệ:**\n- `cooler-types` — Loại tản nhiệt (AIR, AIO)\n- `form-factors` — Form factor ổ cứng (FF_2_5, M2_2280...)\n- `interface-types` — Loại giao tiếp (SATA_3, PCIE_4...)\n- `pcie-connectors` — Connector nguồn PCIe (2X8PIN, 12VHPWR...)\n- `pcie-versions` — Phiên bản PCIe (PCIE_3, PCIE_4, PCIE_5)\n- `ram-types` — Loại RAM (DDR4, DDR5)\n- `sockets` — Socket CPU (AM4, AM5, LGA1700)\n- `ssd-types` — Loại SSD (SATA, NVME)",
+            "Lấy toàn bộ bản ghi của một lookup table. **Không cần xác thực.**\n\n**Các resource hợp lệ:**\n- `case-sizes` — Kích thước case/mainboard (ATX, MATX, ITX, EATX)\n- `cooler-types` — Loại tản nhiệt (AIR, AIO)\n- `form-factors` — Form factor ổ cứng (FF_2_5, M2_2280...)\n- `interface-types` — Loại giao tiếp (SATA_3, PCIE_4...)\n- `pcie-connectors` — Connector nguồn PCIe (2X8PIN, 12VHPWR...)\n- `pcie-versions` — Phiên bản PCIe (PCIE_3, PCIE_4, PCIE_5)\n- `ram-types` — Loại RAM (DDR4, DDR5)\n- `sockets` — Socket CPU (AM4, AM5, LGA1700)\n- `ssd-types` — Loại SSD (SATA, NVME)",
           parameters: [
             {
               name: "resource",
@@ -742,6 +751,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -752,7 +762,7 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "ssd-types",
+              example: "case-sizes",
             },
           ],
           responses: {
@@ -786,6 +796,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -796,7 +807,7 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "ssd-types",
+              example: "case-sizes",
             },
           ],
           requestBody: {
@@ -805,6 +816,10 @@ const options = {
               "application/json": {
                 schema: { $ref: "#/components/schemas/LookupCreateRequest" },
                 examples: {
+                  caseSize: {
+                    summary: "Thêm Case Size",
+                    value: { id: "EATX", name: "Extended ATX (EATX)" },
+                  },
                   ssdType: {
                     summary: "Thêm SSD Type",
                     value: { id: "NVME", name: "NVMe SSD" },
@@ -849,6 +864,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -859,14 +875,14 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "sockets",
+              example: "case-sizes",
             },
             {
               name: "id",
               in: "path",
               required: true,
               schema: { type: "string" },
-              example: "AM5",
+              example: "ATX",
             },
           ],
           responses: {
@@ -876,7 +892,7 @@ const options = {
                 "application/json": {
                   example: {
                     code: 1000,
-                    result: { id: "AM5", name: "AMD AM5 (Ryzen 7000+)" },
+                    result: { id: "ATX", name: "ATX (Standard)" },
                   },
                 },
               },
@@ -897,6 +913,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -907,14 +924,14 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "sockets",
+              example: "case-sizes",
             },
             {
               name: "id",
               in: "path",
               required: true,
               schema: { type: "string" },
-              example: "AM5",
+              example: "ATX",
             },
           ],
           requestBody: {
@@ -922,7 +939,7 @@ const options = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/LookupUpdateRequest" },
-                example: { name: "AMD AM5 (Ryzen 7000 / 9000)" },
+                example: { name: "ATX (Standard Full Tower)" },
               },
             },
           },
@@ -933,7 +950,7 @@ const options = {
                 "application/json": {
                   example: {
                     code: 1000,
-                    result: { id: "AM5", name: "AMD AM5 (Ryzen 7000 / 9000)" },
+                    result: { id: "ATX", name: "ATX (Standard Full Tower)" },
                   },
                 },
               },
@@ -954,6 +971,7 @@ const options = {
               schema: {
                 type: "string",
                 enum: [
+                  "case-sizes",
                   "cooler-types",
                   "form-factors",
                   "interface-types",
@@ -964,14 +982,14 @@ const options = {
                   "ssd-types",
                 ],
               },
-              example: "ssd-types",
+              example: "case-sizes",
             },
             {
               name: "id",
               in: "path",
               required: true,
               schema: { type: "string" },
-              example: "NVME",
+              example: "MATX",
             },
           ],
           responses: {
@@ -1005,13 +1023,14 @@ const options = {
                       {
                         id: "uuid",
                         name: "Lian Li PC-O11D",
-                        size: "ATX",
+                        caseSizeId: "ATX",
                         maxVgaLengthMm: 420,
                         maxCoolerHeightMm: 167,
                         maxRadiatorSize: 360,
                         drive35Slot: 2,
                         drive25Slot: 4,
                         description: null,
+                        caseSize: { id: "ATX", name: "ATX (Standard)" },
                       },
                     ],
                   },
@@ -1031,7 +1050,7 @@ const options = {
                 schema: { $ref: "#/components/schemas/PcCaseRequest" },
                 example: {
                   name: "Lian Li PC-O11D",
-                  size: "ATX",
+                  caseSizeId: "ATX",
                   maxVgaLengthMm: 420,
                   maxCoolerHeightMm: 167,
                   maxRadiatorSize: 360,
@@ -1486,10 +1505,11 @@ const options = {
                         ramBusMax: 6400,
                         ramSlot: 4,
                         ramMaxCapacity: 128,
-                        size: "ATX",
+                        caseSizeId: "ATX",
                         pcieVgaVersionId: "PCIE_5",
                         m2Slot: 5,
                         sataSlot: 6,
+                        caseSize: { id: "ATX", name: "ATX (Standard)" },
                       },
                     ],
                   },
@@ -1516,7 +1536,7 @@ const options = {
                   ramBusMax: 6400,
                   ramSlot: 4,
                   ramMaxCapacity: 128,
-                  size: "ATX",
+                  caseSizeId: "ATX",
                   pcieVgaVersionId: "PCIE_5",
                   m2Slot: 5,
                   sataSlot: 6,

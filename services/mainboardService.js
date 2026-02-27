@@ -1,4 +1,10 @@
-const { Mainboard, Socket, RamType, PcieVersion } = require("../schemas");
+const {
+  Mainboard,
+  Socket,
+  RamType,
+  PcieVersion,
+  CaseSize,
+} = require("../schemas");
 const { findAll, findById, destroy } = require("./pcPartsBaseService");
 const { AppError } = require("./authService");
 const { ErrorCodes } = require("../utils/errorCodes");
@@ -7,11 +13,13 @@ const INCLUDE = [
   { model: Socket, as: "socket" },
   { model: RamType, as: "ramType" },
   { model: PcieVersion, as: "pcieVgaVersion" },
+  { model: CaseSize, as: "caseSize" },
 ];
+const EXCLUDE = ["socketId", "ramTypeId", "pcieVgaVersionId", "caseSizeId"];
 
-const getAll = () => findAll(Mainboard, INCLUDE);
+const getAll = () => findAll(Mainboard, INCLUDE, EXCLUDE);
 
-const getById = (id) => findById(Mainboard, id, INCLUDE);
+const getById = (id) => findById(Mainboard, id, INCLUDE, EXCLUDE);
 
 const create = async ({
   name,
@@ -22,7 +30,7 @@ const create = async ({
   ramBusMax,
   ramSlot,
   ramMaxCapacity,
-  size,
+  caseSizeId,
   pcieVgaVersionId,
   m2Slot,
   sataSlot,
@@ -37,7 +45,7 @@ const create = async ({
     ramBusMax == null ||
     ramSlot == null ||
     ramMaxCapacity == null ||
-    !size ||
+    !caseSizeId ||
     !pcieVgaVersionId
   ) {
     throw new AppError(
@@ -45,7 +53,7 @@ const create = async ({
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
-  return await Mainboard.create({
+  const record = await Mainboard.create({
     name,
     socketId,
     vrmPhase,
@@ -54,18 +62,19 @@ const create = async ({
     ramBusMax,
     ramSlot,
     ramMaxCapacity,
-    size,
+    caseSizeId,
     pcieVgaVersionId,
     m2Slot: m2Slot ?? 0,
     sataSlot: sataSlot ?? 0,
     description,
   });
+  return findById(Mainboard, record.id, INCLUDE, EXCLUDE);
 };
 
 const update = async (id, data) => {
   const record = await findById(Mainboard, id);
   await record.update(data);
-  return findById(Mainboard, id, INCLUDE);
+  return findById(Mainboard, id, INCLUDE, EXCLUDE);
 };
 
 const remove = (id) => destroy(Mainboard, id);

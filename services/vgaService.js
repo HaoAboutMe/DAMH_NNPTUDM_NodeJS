@@ -4,10 +4,11 @@ const { AppError } = require("./authService");
 const { ErrorCodes } = require("../utils/errorCodes");
 
 const INCLUDE = [{ model: PcieVersion, as: "pcieVersion" }];
+const EXCLUDE = ["pcieVersionId"];
 
-const getAll = () => findAll(Vga, INCLUDE);
+const getAll = () => findAll(Vga, INCLUDE, EXCLUDE);
 
-const getById = (id) => findById(Vga, id, INCLUDE);
+const getById = (id) => findById(Vga, id, INCLUDE, EXCLUDE);
 
 const create = async ({
   name,
@@ -30,7 +31,7 @@ const create = async ({
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
-  return await Vga.create({
+  const record = await Vga.create({
     name,
     lengthMm,
     tdp,
@@ -39,12 +40,13 @@ const create = async ({
     score: score ?? 0,
     description,
   });
+  return findById(Vga, record.id, INCLUDE, EXCLUDE);
 };
 
 const update = async (id, data) => {
   const record = await findById(Vga, id);
   await record.update(data);
-  return findById(Vga, id, INCLUDE);
+  return findById(Vga, id, INCLUDE, EXCLUDE);
 };
 
 const remove = (id) => destroy(Vga, id);
