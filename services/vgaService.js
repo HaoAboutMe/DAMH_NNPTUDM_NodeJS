@@ -1,10 +1,13 @@
-const { Vga, PcieVersion } = require("../schemas");
+const { Vga, PcieVersion, PcieConnector } = require("../schemas");
 const { findAll, findById, destroy } = require("./pcPartsBaseService");
 const { AppError } = require("./authService");
 const { ErrorCodes } = require("../utils/errorCodes");
 
-const INCLUDE = [{ model: PcieVersion, as: "pcieVersion" }];
-const EXCLUDE = ["pcieVersionId"];
+const INCLUDE = [
+  { model: PcieVersion, as: "pcieVersion" },
+  { model: PcieConnector, as: "pcieConnector" },
+];
+const EXCLUDE = ["pcieVersionId", "pcieConnectorId"];
 
 const getAll = () => findAll(Vga, INCLUDE, EXCLUDE);
 
@@ -15,7 +18,7 @@ const create = async ({
   lengthMm,
   tdp,
   pcieVersionId,
-  powerConnector,
+  pcieConnectorId,
   score,
   description,
 }) => {
@@ -24,10 +27,10 @@ const create = async ({
     lengthMm == null ||
     tdp == null ||
     !pcieVersionId ||
-    !powerConnector
+    !pcieConnectorId
   ) {
     throw new AppError(
-      "name, lengthMm, tdp, pcieVersionId, powerConnector là bắt buộc",
+      "name, lengthMm, tdp, pcieVersionId, pcieConnectorId là bắt buộc",
       ErrorCodes.MISSING_REQUIRED_FIELDS,
     );
   }
@@ -36,7 +39,7 @@ const create = async ({
     lengthMm,
     tdp,
     pcieVersionId,
-    powerConnector,
+    pcieConnectorId,
     score: score ?? 0,
     description,
   });

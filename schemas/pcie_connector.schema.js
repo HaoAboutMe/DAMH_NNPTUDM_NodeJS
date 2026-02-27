@@ -28,6 +28,10 @@ module.exports = (sequelize) => {
       otherKey: "psuId",
       as: "psus",
     });
+    PcieConnector.hasMany(models.Vga, {
+      foreignKey: "pcieConnectorId",
+      as: "vgas",
+    });
   };
 
   return PcieConnector;

@@ -407,7 +407,7 @@ const options = {
             "lengthMm",
             "tdp",
             "pcieVersionId",
-            "powerConnector",
+            "pcieConnectorId",
           ],
           properties: {
             name: { type: "string", example: "NVIDIA RTX 4090" },
@@ -422,10 +422,12 @@ const options = {
               enum: ["PCIE_3", "PCIE_4", "PCIE_5"],
               example: "PCIE_4",
             },
-            powerConnector: {
+            pcieConnectorId: {
               type: "string",
+              enum: ["2X8PIN", "3X8PIN", "12VHPWR", "16PIN"],
               example: "12VHPWR",
-              description: "Mô tả connector nguồn",
+              description:
+                "Loại connector nguồn PCIe — xem /pc-parts/identity/pcie-connectors",
             },
             score: {
               type: "integer",
@@ -1993,10 +1995,13 @@ const options = {
                         name: "NVIDIA RTX 4090",
                         lengthMm: 336,
                         tdp: 450,
-                        pcieVersionId: "PCIE_4",
-                        powerConnector: "12VHPWR",
                         score: 30000,
                         description: null,
+                        pcieVersion: { id: "PCIE_4", name: "PCIe 4.0" },
+                        pcieConnector: {
+                          id: "12VHPWR",
+                          name: "12VHPWR (16-pin, RTX 4000 series)",
+                        },
                       },
                     ],
                   },
@@ -2022,7 +2027,7 @@ const options = {
                       lengthMm: 336,
                       tdp: 450,
                       pcieVersionId: "PCIE_4",
-                      powerConnector: "12VHPWR",
+                      pcieConnectorId: "12VHPWR",
                       score: 30000,
                       description:
                         "GPU NVIDIA Ada Lovelace, 24GB GDDR6X, flagship 2023",
@@ -2035,7 +2040,7 @@ const options = {
                       lengthMm: 287,
                       tdp: 355,
                       pcieVersionId: "PCIE_4",
-                      powerConnector: "2X8PIN",
+                      pcieConnectorId: "2X8PIN",
                       score: 25000,
                       description:
                         "GPU AMD RDNA 3, 24GB GDDR6, flagship AMD 2023",
